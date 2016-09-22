@@ -38,7 +38,10 @@ window.findNRooksSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  //create an initial 'board' of all zeroes
+  //if n is 1, there is only 1 solution
+  if (n === 1) { return 1; }
+
+  //create empty board of all zeroes, no players
   var solutions = [];
   for (var j = 0; j < n; j++) {
     var rows = [];
@@ -47,36 +50,68 @@ window.countNRooksSolutions = function(n) {
     }
     solutions.push(rows);
   }
-  //internal function(currentboard, checkrowstart) {
-    //if the checkrowstart is the last row
-      //loop through each spot in last row, check if board is a solution
-    //otherwise if checkrowstart is not the last row
-      //loop through each spot in the checkrowstart, if no conflicts, call internal function with current board, next row as start row
 
-  //currentBoard will have no conflicts when passed in
+  //initialize number of solutions to 0
+  var solutionCount = 0;
+
+  //this is an internal function. it takes a board with one 1 in each row up until startRow. startRow and after are all zeroes.
+  //the input board has no conflicts.
   var calculateForCurrent = function(currentBoard, startRow) {
+    //initialize the number of solutions for the current board to 0
+    solCountBoard = 0;
     var n = currentBoard[0].length;
-    if (startRow === n - 1) {
-      
+    //if we are starting with the last row...
+    if (startRow >= n - 1) {
+      //loop through each spot in row
+      for (var col = 0; col < n; col ++) {
+        //add a player to current spot
+        currentBoard[startRow][col] = 1;
+        //turn current array into an actual board object
+        var boardCheck = new Board(currentBoard);
+        //if current board has no conflicts...
+        if (boardCheck.hasAnyRooksConflicts() === false) {
+          //add 1 to the number of solutions
+          solCountBoard ++;
+        }
+        //remove player from current spot so the board is as it was when we passed it in
+        currentBoard[startRow][col] = 0;
+      }
+      //if we are starting in a row that is not the last row...
+    } else {
+      //loop through each spot in the row
+      for (var col = 0; col < n; col ++) {
+        //add a player to current spot
+        currentBoard[startRow][col] = 1;
+        //turn the current array into an actual board
+        var boardCheck = new Board(currentBoard);
+        //if there are no conflicts....
+        if (boardCheck.hasAnyRooksConflicts() === false) {
+          //recurse; we call the internal function with the current board, starting with the next row as the first blank row
+          solCountBoard = solCountBoard + calculateForCurrent(currentBoard, startRow + 1);
+        }
+        //remove player from current spot
+        currentBoard[startRow][col] = 0;
+      }
     }
+    //return the final solution count for this board
+    return solCountBoard;
   };
 
   //}
-  //loop through columns
+  //loop through spots in first row. this starts with a blank board of all zeroes
   for (var i = 0; i < n; i++) {
-    //loop through all other spots and check for row and column conflicts
-    for (var row = 1; row < n; row++) {
-      for (var col = 0; col < n; col++) {
-      //if we find a conflict exit the loop
-      //if we don't find a conflict, add 1 to solutioncount
-
-      }
-    }
+    //add a 1 to the current spot
+    solutions[0][i] = 1;
+    //call the internal function on the current board, which is just all zeroes with a 1 in the current spot
+    solutionCount = solutionCount + calculateForCurrent(solutions, 1);
+    //set the current spot back to 0
+    solutions[0][i] = 0;
   }    
 
-  var solutionCount = undefined; //fixme
 
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
+  debugger;
+  //return count
   return solutionCount;
 };
 
