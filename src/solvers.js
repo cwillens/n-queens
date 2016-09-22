@@ -18,6 +18,7 @@
 window.findNRooksSolution = function(n) {
 
   var solution = [];
+  //oneSpot is the place where we will put a 1
   var oneSpot = 0;
   for (var row = 0; row < n; row++) {
     var newRow = [];
@@ -110,14 +111,60 @@ window.countNRooksSolutions = function(n) {
 
 
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
-  debugger;
   //return count
   return solutionCount;
 };
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var solution = undefined; //fixme
+  //start with a board of all zeroes
+  if (n === 1) { return [[1]]; }
+
+  var solution = [];
+  for (var j = 0; j < n; j++) {
+    var rows = [];
+    for (var k = 0; k < n; k++) {
+      rows.push(0);
+    }
+    solution.push(rows);
+  }  //loop through all spots in the first row
+  debugger;
+  var findConflicts = function (currentBoard,startRow) {
+    if (startRow >= n - 1) {
+      for (var j = 0; j < n; j++) {
+        currentBoard[startRow][j] = 1;
+        var board = new Board(currentBoard);
+        if (! board.hasAnyQueensConflicts()) {
+          return currentBoard;
+        } else {
+          currentBoard[startRow][j] = 0;
+        }
+      }
+    } else {
+      for (var j = 0; j < n; j++) {
+        currentBoard[startRow][j] = 1;
+        var board = new Board(currentBoard);
+        if (! board.hasAnyQueensConflicts()) {
+          return findConflicts(currentBoard, startRow + 1);
+        } else {
+          currentBoard[startRow][j] = 0;
+        }
+      }
+    }
+  };
+
+  for (var i = 0; i < n; i++) {
+    solution[0][i] = 1;
+    var temp = findConflicts(solution, 1);
+    if (temp) {
+      return temp;
+    } 
+    solution[0][i] = 0;
+  }
+    //put a 1 in current spot in first row
+    //see if there is a solution with 1 in that spot -- loop through each spot in each row, if works, 
+    // ...recursively call internal function with current board, next row
+
 
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
   return solution;

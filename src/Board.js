@@ -158,7 +158,7 @@
 
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
-      if (this.get('n') === 1) {
+      if (this.get('n') <= 1) {
         return false;
       }
 
@@ -204,7 +204,7 @@
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
-      if (this.get('n') === 1) {
+      if (this.get('n') <= 1) {
         return false;
       }
 
