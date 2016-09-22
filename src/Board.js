@@ -142,7 +142,7 @@
       var counter = 0;
       var currRow = 0;
       var currCol = majorDiagonalColumnIndexAtFirstRow;
-      while (currCol < this.get('n')) {
+      while (currCol < this.get('n') && currRow < this.get('n')) {
         if (this.get(currRow)[currCol] === 1) {
           counter ++;
         }
@@ -188,7 +188,7 @@
       var counter = 0;
       var currRow = 0;
       var currCol = minorDiagonalColumnIndexAtFirstRow;
-      while (currCol >= 0) {
+      while (currCol >= 0 && currRow < this.get('n')) {
         if (this.get(currRow)[currCol] === 1) {
           counter ++;
         }
