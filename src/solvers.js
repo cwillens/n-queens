@@ -128,9 +128,9 @@ window.findNQueensSolution = function(n) {
     }
     solution.push(rows);
   }  //loop through all spots in the first row
-  debugger;
-  var findConflicts = function (currentBoard,startRow) {
-    console.log("n is "+n+" current board is "+currentBoard+", startrow is "+startRow);
+  
+  var findConflicts = function (currentBoard, startRow) {
+    console.log("n is " + n + " current board is " + currentBoard + " , startrow is " + startRow);
     if (startRow >= n - 1) {
       for (var j = 0; j < n; j++) {
         currentBoard[startRow][j] = 1;
@@ -183,7 +183,80 @@ window.findNQueensSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
+
   var solutionCount = undefined; //fixme
+
+  if (n === 1 || n === 0) { return 1; }
+
+  //create empty board of all zeroes, no players
+  
+  //create empty board of all zeroes, no players
+  var solutions = [];
+  for (var j = 0; j < n; j++) {
+    var rows = [];
+    for (var k = 0; k < n; k++) {
+      rows.push(0);
+    }
+    solutions.push(rows);
+  }
+
+  //initialize number of solutions to 0
+  var solutionCount = 0;
+  debugger;
+
+  //this is an internal function. it takes a board with one 1 in each row up until startRow. startRow and after are all zeroes.
+  //the input board has no conflicts.
+  var calculateForCurrent = function(currentBoard, startRow) {
+    //initialize the number of solutions for the current board to 0
+    solCountBoard = 0;
+    var n = currentBoard[0].length;
+    //if we are starting with the last row...
+    if (startRow >= n - 1) {
+      //loop through each spot in row
+      for (var col = 0; col < n; col++) {
+        //add a player to current spot
+        currentBoard[startRow][col] = 1;
+        //turn current array into an actual board object
+        var boardCheck = new Board(currentBoard);
+        //if current board has no conflicts...
+        if (boardCheck.hasAnyQueensConflicts() === false) {
+          //add 1 to the number of solutions
+          solCountBoard ++;
+        }
+        //remove player from current spot so the board is as it was when we passed it in
+        currentBoard[startRow][col] = 0;
+      }
+      //if we are starting in a row that is not the last row...
+    } else {
+      //loop through each spot in the row
+      for (var col = 0; col < n; col ++) {
+        //add a player to current spot
+        currentBoard[startRow][col] = 1;
+        //turn the current array into an actual board
+        var boardCheck = new Board(currentBoard);
+        //if there are no conflicts....
+        if (boardCheck.hasAnyQueensConflicts() === false) {
+          //recurse; we call the internal function with the current board, starting with the next row as the first blank row
+          solCountBoard = solCountBoard + calculateForCurrent(currentBoard, startRow + 1);
+        }
+        //remove player from current spot
+        currentBoard[startRow][col] = 0;
+      }
+    }
+    //return the final solution count for this board
+    return solCountBoard;
+  };
+
+  //}
+  //loop through spots in first row. this starts with a blank board of all zeroes
+  for (var i = 0; i < n; i++) {
+    //add a 1 to the current spot
+    solutions[0][i] = 1;
+    //call the internal function on the current board, which is just all zeroes with a 1 in the current spot
+    solutionCount = solutionCount + calculateForCurrent(solutions, 1);
+    //set the current spot back to 0
+    solutions[0][i] = 0;
+  }    
 
   console.log('Number of solutions for ' + n + ' queens:', solutionCount);
   return solutionCount;
