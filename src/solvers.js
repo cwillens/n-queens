@@ -130,6 +130,7 @@ window.findNQueensSolution = function(n) {
   }  //loop through all spots in the first row
   debugger;
   var findConflicts = function (currentBoard,startRow) {
+    console.log("n is "+n+" current board is "+currentBoard+", startrow is "+startRow);
     if (startRow >= n - 1) {
       for (var j = 0; j < n; j++) {
         currentBoard[startRow][j] = 1;
@@ -145,28 +146,38 @@ window.findNQueensSolution = function(n) {
         currentBoard[startRow][j] = 1;
         var board = new Board(currentBoard);
         if (! board.hasAnyQueensConflicts()) {
-          return findConflicts(currentBoard, startRow + 1);
-        } else {
-          currentBoard[startRow][j] = 0;
-        }
+          var testSol = findConflicts(currentBoard, startRow + 1);
+          if (testSol) {
+            return testSol;
+          }
+        } 
+        currentBoard[startRow][j] = 0;
       }
     }
+
   };
 
   for (var i = 0; i < n; i++) {
     solution[0][i] = 1;
     var temp = findConflicts(solution, 1);
+    console.log("solution for "+i+" is "+temp);
     if (temp) {
       return temp;
     } 
     solution[0][i] = 0;
+    //set input back to original state
+    for (var row = 1; row < n; row ++) {
+      for (var col = 0; col < n; col ++) {
+        solution[row][col] = 0;
+      }
+    }
   }
     //put a 1 in current spot in first row
     //see if there is a solution with 1 in that spot -- loop through each spot in each row, if works, 
     // ...recursively call internal function with current board, next row
 
 
-  console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
+  //console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
   return solution;
 };
 
