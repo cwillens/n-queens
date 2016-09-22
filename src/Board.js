@@ -79,7 +79,15 @@
     //
     // test if a specific row on this board contains a conflict
     hasRowConflictAt: function(rowIndex) {
-      var counter = 0;
+      var totalMoves = _.reduce(this.get(rowIndex), function(accumulator, curr) {
+        if (curr === 1) {
+          accumulator += curr;
+        }
+        return accumulator;
+      }, 0);
+
+      return (totalMoves > 1);
+     /* var counter = 0;
       for (var i = 0; i < this.get('n'); i++) {
         if (this.get(rowIndex)[i] === 1) {
           counter ++;
@@ -88,7 +96,7 @@
       if (counter > 1) {
         return true;
       }
-      return false; // fixme
+      return false; // fixme*/
     },
 
     // test if any rows on this board contain conflicts
