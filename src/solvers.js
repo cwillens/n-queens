@@ -57,41 +57,48 @@ window.countNRooksSolutions = function(n) {
 
   //this is an internal function. it takes a board with one 1 in each row up until startRow. startRow and after are all zeroes.
   //the input board has no conflicts.
-  var calculateForCurrent = function(currentBoard, startRow) {
+  var calculateForCurrent = function(currentBoard, startRow, colsSoFar) {
     //initialize the number of solutions for the current board to 0
     solCountBoard = 0;
     var n = currentBoard[0].length;
+    debugger;
     //if we are starting with the last row...
     if (startRow >= n - 1) {
       //loop through each spot in row
       for (var col = 0; col < n; col ++) {
-        //add a player to current spot
-        currentBoard[startRow][col] = 1;
-        //turn current array into an actual board object
-        var boardCheck = new Board(currentBoard);
-        //if current board has no conflicts...
-        if (boardCheck.hasAnyRooksConflicts() === false) {
-          //add 1 to the number of solutions
-          solCountBoard ++;
+        if (!colsSoFar[col]) {
+          //add a player to current spot
+          currentBoard[startRow][col] = 1;
+          //turn current array into an actual board object
+          var boardCheck = new Board(currentBoard);
+          //if current board has no conflicts...
+          if (boardCheck.hasAnyRooksConflicts() === false) {
+            //add 1 to the number of solutions
+            solCountBoard ++;
+          }
+          //remove player from current spot so the board is as it was when we passed it in
+          currentBoard[startRow][col] = 0;
         }
-        //remove player from current spot so the board is as it was when we passed it in
-        currentBoard[startRow][col] = 0;
       }
       //if we are starting in a row that is not the last row...
     } else {
       //loop through each spot in the row
       for (var col = 0; col < n; col ++) {
-        //add a player to current spot
-        currentBoard[startRow][col] = 1;
-        //turn the current array into an actual board
-        var boardCheck = new Board(currentBoard);
-        //if there are no conflicts....
-        if (boardCheck.hasAnyRooksConflicts() === false) {
-          //recurse; we call the internal function with the current board, starting with the next row as the first blank row
-          solCountBoard = solCountBoard + calculateForCurrent(currentBoard, startRow + 1);
+        if (!colsSoFar[col]) {
+          //add a player to current spot
+          currentBoard[startRow][col] = 1;
+          //turn the current array into an actual board
+          var boardCheck = new Board(currentBoard);
+          //if there are no conflicts....
+          if (boardCheck.hasAnyRooksConflicts() === false) {
+            //recurse; we call the internal function with the current board, starting with the next row as the first blank row
+            colsSoFar[col] = col;
+            solCountBoard = solCountBoard + calculateForCurrent(currentBoard, startRow + 1, colsSoFar);
+          }
+          //remove player from current spot
+          delete colsSoFar[col];
+          currentBoard[startRow][col] = 0;
         }
-        //remove player from current spot
-        currentBoard[startRow][col] = 0;
       }
     }
     //return the final solution count for this board
@@ -104,7 +111,9 @@ window.countNRooksSolutions = function(n) {
     //add a 1 to the current spot
     solutions[0][i] = 1;
     //call the internal function on the current board, which is just all zeroes with a 1 in the current spot
-    solutionCount = solutionCount + calculateForCurrent(solutions, 1);
+    var onesCols = {};
+    onesCols[i] = i;
+    solutionCount = solutionCount + calculateForCurrent(solutions, 1, onesCols);
     //set the current spot back to 0
     solutions[0][i] = 0;
   }    
@@ -202,7 +211,6 @@ window.countNQueensSolutions = function(n) {
 
   //initialize number of solutions to 0
   var solutionCount = 0;
-  debugger;
 
   //this is an internal function. it takes a board with one 1 in each row up until startRow. startRow and after are all zeroes.
   //the input board has no conflicts.
