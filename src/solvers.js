@@ -66,7 +66,7 @@ window.countNRooksSolutions = function(n) {
     if (startRow >= n - 1) {
       //loop through each spot in row
       for (var col = 0; col < n; col ++) {
-        if (!colsSoFar[col]) {
+        if (colsSoFar[col] === undefined) {
           //add a player to current spot
           currentBoard[startRow][col] = 1;
           //turn current array into an actual board object
@@ -84,7 +84,7 @@ window.countNRooksSolutions = function(n) {
     } else {
       //loop through each spot in the row
       for (var col = 0; col < n; col ++) {
-        if (!colsSoFar[col]) {
+        if (colsSoFar[col] === undefined) {
           //add a player to current spot
           currentBoard[startRow][col] = 1;
           //turn the current array into an actual board
@@ -138,8 +138,7 @@ window.findNQueensSolution = function(n) {
     solution.push(rows);
   }  //loop through all spots in the first row
   
-  var findConflicts = function (currentBoard, startRow) {
-    console.log("n is " + n + " current board is " + currentBoard + " , startrow is " + startRow);
+  var calculateForCurrent = function (currentBoard, startRow) {
     if (startRow >= n - 1) {
       for (var j = 0; j < n; j++) {
         currentBoard[startRow][j] = 1;
@@ -155,7 +154,7 @@ window.findNQueensSolution = function(n) {
         currentBoard[startRow][j] = 1;
         var board = new Board(currentBoard);
         if (! board.hasAnyQueensConflicts()) {
-          var testSol = findConflicts(currentBoard, startRow + 1);
+          var testSol = calculateForCurrent(currentBoard, startRow + 1);
           if (testSol) {
             return testSol;
           }
@@ -168,8 +167,7 @@ window.findNQueensSolution = function(n) {
 
   for (var i = 0; i < n; i++) {
     solution[0][i] = 1;
-    var temp = findConflicts(solution, 1);
-    console.log("solution for "+i+" is "+temp);
+    var temp = calculateForCurrent(solution, 1);
     if (temp) {
       return temp;
     } 
